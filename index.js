@@ -1,10 +1,8 @@
-
 /**
  * Module dependencies.
  */
 
 var thunkify = require('thunkify');
-var assert = require('assert');
 var aws = require('aws-sdk');
 
 /**
@@ -21,14 +19,16 @@ module.exports = Client;
  */
 
 function Client(opts) {
-  if (!(this instanceof Client)) return new Client(opts);
+    if (!(this instanceof Client)) return new Client(opts);
 
-  // global?
-  aws.config.update(opts);
+    // global?
+    aws.config.update(opts);
 
-  // wayyyy more to support...
-  this.ec2 = new aws.EC2;
-  wrap(this.ec2);
+    // wayyyy more to support...
+    ['EC2', 'S3'].forEach(function (service) {
+        this[service] = new aws[service];
+        wrap(this[service]);
+    });
 }
 
 /**
@@ -36,10 +36,10 @@ function Client(opts) {
  */
 
 function wrap(obj) {
-  Object.keys(obj.__proto__).forEach(function(key){
-    var val = obj.__proto__[key];
-    if ('constructor' == val) return;
-    if ('function' != typeof val) return;
-    obj[key] = thunkify(obj[key]);
-  });
+    Object.keys(obj.__proto__).forEach(function (key) {
+        var val = obj.__proto__[key];
+        if ('constructor' == val) return;
+        if ('function' != typeof val) return;
+        obj[key] = thunkify(obj[key]);
+    });
 }
