@@ -18,17 +18,20 @@ module.exports = Client;
  * @api public
  */
 
-function Client(opts) {
-    if (!(this instanceof Client)) return new Client(opts);
+function Client(opts, services) {
+    if (!(this instanceof Client)) return new Client(opts, services);
+
+    if(!(services instanceof Array) || services.length === 0) {
+        throw new Error('You must specify a string array of AWS services to initialise and thunk. e.g. [\'S3\', \'EC2\']. See the class names here http://docs.aws.amazon.com/AWSJavaScriptSDK/latest/index.html');
+    }
 
     // global?
     aws.config.update(opts);
 
-    // wayyyy more to support...
-    ['EC2', 'S3'].forEach(function (service) {
+    services.forEach(function (service) {
         this[service] = new aws[service];
         wrap(this[service]);
-    });
+    }, this);
 }
 
 /**
