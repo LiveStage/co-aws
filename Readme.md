@@ -2,9 +2,7 @@
 
   AWS client for generators.
 
-  Only EC2 is supported right now, aws-sdk is massive,
-  but if you feel like wrapping the rest or want to help
-  maintain this library let me know! I just need EC2 for now.
+
 
 ## Installation
 
@@ -15,17 +13,28 @@ $ npm install co-aws2
 ## Example
 
 ```js
+
 var AWS = require('co-aws');
+var co = require('co');
 
 var aws = AWS({
   accessKeyId: conf.key,
   secretAccessKey: conf.secret,
   sslEnabled: true,
   region: 'us-west-2'
+}, ['EC2', 'S3']);
+
+co(function *() {
+    var instances = yield aws.EC2.describeInstances();
+    console.log(JSON.stringify(instances, null, 4));
+    
+    var objects = yield aws.S3.listObjects({ Bucket: 'my bucket' });
+    console.log(JSON.stringify(objects, null, 4));
+    
+})(function () {
+    console.log('Were done');
 });
 
-...
-var instances = yield aws.ec2.describeInstances();
 ```
 
 # License
