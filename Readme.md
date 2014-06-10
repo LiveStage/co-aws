@@ -32,7 +32,7 @@ co(function *() {
     console.log(JSON.stringify(objects, null, 4));
     
 })(function () {
-    console.log('Were done');
+    console.log('We are done');
 });
 
 ```
