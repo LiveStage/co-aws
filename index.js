@@ -28,6 +28,9 @@ function Client(opts, services) {
     // global?
     aws.config.update(opts);
 
+    // Expose the wrap me function so if folks need to create things like s3 clients for other buckets, they can easily thunk them.
+    this.wrap = wrap;
+
     services.forEach(function (service) {
         this[service] = new aws[service];
         wrap(this[service]);
